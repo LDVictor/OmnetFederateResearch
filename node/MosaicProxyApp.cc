@@ -25,7 +25,7 @@
 #include "inet/applications/common/SocketTag_m.h"
 #include "inet/common/Ptr.h"
 #include "inet/common/packet/Message.h"
-#include "inet/common/packet/Packet.h"
+#include "inet/common/packet/CoAPPacket.h"
 #include "inet/common/packet/chunk/cPacketChunk.h"
 #include "inet/transportlayer/common/L4PortTag_m.h"
 #include "inet/transportlayer/contract/udp/UdpSocket.h"
@@ -124,29 +124,29 @@ void MosaicProxyApp::sendDelayedToCoAP(omnetpp::cPacket *msg, int srcPort, const
 
     // Create CoAP Packet containing {msg}
     auto className = msg->getClassName();
-    auto *coapPacket = new inet::Packet(!strncmp("inet::", className, 6) ? className + 6 : className);
+    auto *coapPacket = new inet::CoAPPacket(!strncmp("inet::", className, 6) ? className + 6 : className);
+
     coapPacket->insertAtFront(inet::makeShared<inet::cPacketChunk>(msg));
-    //coapPacket->insertAtBack(inet::makeShared<inet::cPacketChunk>(msg));
+    coapPacket->insertAtBack(inet::makeShared<inet::cPacketChunk>(msg));
+    coapPacket->insertContent(inet::makeShared<inet::cPacketChunk>(msg));
     auto addresses = coapPacket->addTagIfAbsent<inet::L3AddressReq>();
     addresses->setSrcAddress(localAddress);
     addresses->setDestAddress(destAddr);
+
     coapPacket->addTagIfAbsent<inet::SocketReq>()->setSocketId(socket.generateSocketId());
     coapPacket->addTagIfAbsent<inet::L4PortReq>()->setDestPort(destPort);
     
-    // novo codigo
-    //auto pcapUDP = new inet::PcapDump();
-    //pcapUDP->openPcap("pcapUDP.pcap", 65535, 0);
-    //pcapSend->writePacket(omnetpp::simtime_t(), coapPacket);
     EV << "Passei por aqui - sendDelayedToCoAP" << std::endl;
-    //pcapUDP->closePcap();
-    //
-
 
     int channelId = packet->getChannelId();
     if (numRadios > 0 && channelId == radio0Channel) {
+
         coapPacket->addTagIfAbsent<inet::InterfaceReq>()->setInterfaceId(ie0->getInterfaceId());
+
     } else if (numRadios > 1 && channelId == radio1Channel) {
+
         coapPacket->addTagIfAbsent<inet::InterfaceReq>()->setInterfaceId(ie1->getInterfaceId());
+
     } else {
         EV << "Unused channel set in Packet " << std::endl;
         return;
@@ -165,41 +165,35 @@ void MosaicProxyApp::sendPacket(omnetpp::cMessage *msg) {
     EV << "MosaicCoAP - Pacote enviado" << std::endl;
 
     auto *packet = inet::check_and_cast<MosaicAppPacket *>(msg);
-    auto destAddr = packet->getDestAddr();
-    double delay = (dblrand() * 10) * maxProcDelay + 2 * (dblrand() * 0.0005);
-    
-   // novo codigo
-    //auto pcapSend = new inet::PcapDump();
-    //pcapSend->openPcap("pcapSend.pcap", 65535, 0);
-    //pcapSend->writePacket(omnetpp::simtime_t(), packet);
-    EV << "Passei por aqui - sendPacket" << std::endl;
-    //pcapSend->closePcap();
-    //
+    auto destAddress = packet->getDestAddr();
 
-    EV << "O delay do pacote normal foi: " << delay * 3 << " e a mensagem foi: " << " " << std::endl;
-    sendDelayedToCoAP(omnetpp::check_and_cast<omnetpp::cPacket *>(msg->dup()), localPort, destAddr, destPort, delay);
+    double delay = dblrand() * maxProcDelay + delayAck;
+    
+    EV << "Passei por aqui - sendPacket" << std::endl;
+
+    EV << "O delay do pacote normal foi: " << delay * 3 << " e a mensagem foi: " << *msg->content << std::endl;
+
+    sendDelayedToCoAP(omnetpp::check_and_cast<omnetpp::cPacket *>(msg->dup()), localPort, destAddress, destPort, delay);
 }
 
 /**
  * Receive of udp packets and forwarding to Mosaic applications.
  */
 void MosaicProxyApp::receivePacket(omnetpp::cMessage *msg) {
+
     EV << "MosaicCoAP - Pacote recebido: ";
 
-    auto coap_packet = inet::check_and_cast<inet::Packet*>(msg);
+    auto coap_packet = inet::check_and_cast<inet::CoAPPacket*>(msg);
     auto cPacket = coap_packet->popAtBack<inet::cPacketChunk>().get()->getPacket();
     auto packet = omnetpp::check_and_cast<MosaicAppPacket*>(cPacket);
+
     EV << "MosaicCoAP: srcNodeId " << packet->getNodeId() << ", msgId " << packet->getMsgId() << std::endl;
+
     packet->setNodeId(m_externalId);
+
     auto mensagem_ack = omnetpp::check_and_cast<MosaicAppPacket*>(cPacket);
 
-    // novo codigo
-     //auto pcapSend = new inet::PcapDump();
-     //pcapSend->openPcap("pcapReceive.pcap", 65535, 0);
-     //pcapSend->writePacket(omnetpp::simtime_t(), cPacket);
      EV << "Passei por aqui - receivePacket" << std::endl;
-     //pcapSend->closePcap();
-     //
 
     send(packet->dup(), gate("fedOut"));
     sendDirect(mensagem_ack->dup(), gate("fedOut"));

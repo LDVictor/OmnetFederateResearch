@@ -37,11 +37,11 @@ CoAPPacket::CoAPPacket(const char *name, short kind) :
 
 CoAPPacket::CoAPPacket(const char *name, const Ptr<const Chunk>& content) :
     cPacket(name),
-    version(content->getChunkLength()),
-    type(content->getChunkLength()),
-    tokenLength(content->getChunkLength()),
-    code(content->getChunkLength()),
-    messageID(content->getChunkLength()),
+    version(content->getVersion()),
+    type(content->getType()),
+    tokenLength(content->getTokenLength()),
+    code(content->getCode()),
+    messageID(content->getMessageID()),
     content(content),
     totalLength(content->getChunkLength())
 {
@@ -50,11 +50,11 @@ CoAPPacket::CoAPPacket(const char *name, const Ptr<const Chunk>& content) :
 
 CoAPPacket::CoAPPacket(const Packet& other) :
     cPacket(other),
-    version(other.totalLength),
-    type(other.totalLength),
-    tokenLength(other.totalLength),
-    code(other.totalLength),
-    messageID(other.totalLength),
+    version(other.version),
+    type(other.type),
+    tokenLength(other.tokenLength),
+    code(other.code),
+    messageID(other.messageID),
     content(other.content),
     totalLength(other.totalLength),
     tags(other.tags)

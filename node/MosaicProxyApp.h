@@ -37,6 +37,7 @@
 #include "inet/common/lifecycle/ILifecycle.h"
 #include "inet/common/packet/recorder/PacketDump.h"
 #include "inet/common/packet/recorder/PcapDump.h"
+#include "inet/common/packet/CoAPPacket.h"
 
 #include <inet/physicallayer/ieee80211/packetlevel/Ieee80211Radio.h>
 
@@ -51,7 +52,7 @@ public:
     int getExternalId() const;
 
     virtual void initialize(int stage);
-    void sendDelayedToCoAP(omnetpp::cPacket *msg, int srcPort, const inet::Ipv4Address& destAddr, int destPort, double delay);
+    void sendDelayedToCoAP(omnetpp::cPacket *msg, int srcPort, const inet::Ipv4Address& destAddress, int destPort, double delay);
     void sendPacket(omnetpp::cMessage *msg);
     void receivePacket(omnetpp::cMessage *msg);
     virtual void handleConfiguration(MosaicConfigurationCmd * cmd);
