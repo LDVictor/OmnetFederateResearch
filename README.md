@@ -197,10 +197,3 @@ mosaic.sh -s scenarios/Urban\_campina -c node/MosaicProxyApp.cc
 \*Note: All simulation runs enforce an initial 60-second warm-up period in SUMO before metric logging begins to ensure traffic flow reaches steady-state conditions\[cite: 1].\*
 
 
-
-\---
-
-
-
-```
-
