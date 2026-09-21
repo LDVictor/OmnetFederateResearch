@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<net version="1.20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <!-- Conexões com lanes (mantido igual ao seu código anterior) -->
+    <edge id="A_to_int" from="A" to="intersection">
+        <lane id="A_to_int_0" index="0" speed="13.89" length="500.00" shape="0.00,0.00 500.00,0.00"/>
+        <lane id="A_to_int_1" index="1" speed="13.89" length="500.00" shape="0.00,3.50 500.00,3.50"/>
+    </edge>
+
+    <edge id="int_to_X" from="intersection" to="X">
+        <lane id="int_to_X_0" index="0" speed="13.89" length="360.56" shape="500.00,0.00 800.00,300.00"/>
+    </edge>
+
+    <edge id="int_to_Y" from="intersection" to="Y">
+        <lane id="int_to_Y_0" index="0" speed="13.89" length="360.56" shape="500.00,0.00 800.00,-300.00"/>
+    </edge>
+
+    <edge id="X_to_B" from="X" to="B">
+        <lane id="X_to_B_0" index="0" speed="13.89" length="721.11" shape="800.00,300.00 1500.00,0.00"/>
+        <lane id="X_to_B_1" index="1" speed="13.89" length="721.11" shape="800.00,303.50 1500.00,3.50"/>
+    </edge>
+
+    <edge id="Y_to_B" from="Y" to="B">
+        <lane id="Y_to_B_0" index="0" speed="13.89" length="721.11" shape="800.00,-300.00 1500.00,0.00"/>
+        <lane id="Y_to_B_1" index="1" speed="13.89" length="721.11" shape="800.00,-303.50 1500.00,-3.50"/>
+    </edge>
+
+    <!-- Zona sem cobertura -->
+    <edge id="deadzone" from="intersection" to="B">
+        <lane id="deadzone_0" index="0" speed="13.89" length="1000.00" shape="500.00,0.00 1500.00,0.00"/>
+        <lane id="deadzone_1" index="1" speed="13.89" length="1000.00" shape="500.00,3.50 1500.00,3.50"/>
+        <param key="coverage" value="false"/>
+    </edge>
+
+        <!-- Edges reversos para tráfego oposto -->
+    <edge id="B_to_int" from="B" to="intersection">
+        <lane id="B_to_int_0" index="0" speed="13.89" length="1000.00" shape="1500.00,0.00 500.00,0.00"/>
+        <lane id="B_to_int_1" index="1" speed="13.89" length="1000.00" shape="1500.00,3.50 500.00,3.50"/>
+        <param key="coverage" value="false"/>
+    </edge>
+
+    <edge id="int_to_A" from="intersection" to="A">
+        <lane id="int_to_A_0" index="0" speed="13.89" length="500.00" shape="500.00,0.00 0.00,0.00"/>
+        <lane id="int_to_A_1" index="1" speed="13.89" length="500.00" shape="500.00,3.50 0.00,3.50"/>
+    </edge>
+
+        <!-- Nós principais com incLanes -->
+    <junction id="A" x="0.0" y="0.0" type="priority" incLanes=""/>
+    <junction id="intersection" x="500.0" y="0.0" type="traffic_light" 
+              incLanes="A_to_int_0 A_to_int_1 int_to_X_0 int_to_Y_0"/>
+    <junction id="X" x="800.0" y="300.0" type="priority" incLanes="int_to_X_0"/>
+    <junction id="Y" x="800.0" y="-300.0" type="priority" incLanes="int_to_Y_0"/>
+    <junction id="B" x="1500.0" y="0.0" type="priority" 
+              incLanes="X_to_B_0 X_to_B_1 Y_to_B_0 Y_to_B_1 B_to_int_0 B_to_int_1"/>
+
+</net>

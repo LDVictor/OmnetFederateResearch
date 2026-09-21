@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewsettings>
+    <viewport zoom="100" centerX="500" centerY="500"/>
+    <delay value="50"/> <!-- Atraso de 50 ms entre passos -->
+</viewsettings>

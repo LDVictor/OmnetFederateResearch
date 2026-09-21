@@ -1,0 +1,23 @@
+<routes>
+    <!-- Veículos autênticos -->
+    <vType id="authentic" accel="2.6" decel="4.5" sigma="0.5" color="green"/>
+    
+    <!-- Rotas autênticas (mantidas) -->
+    <route id="route_A_B" edges="A_to_int int_to_X X_to_B"/>
+    <route id="route_A_B_alt" edges="A_to_int int_to_Y Y_to_B"/>
+
+    <!-- Rota maliciosa (B → intersection → A) -->
+    <route id="route_malicious" edges="B_to_int int_to_A"/>
+    
+    <!-- Fluxo principal -->
+    <flow id="main_flow" type="authentic" route="route_A_B" begin="0" end="100" period="5"/>
+    
+    <!-- Veículo malicioso -->
+    <vType id="malicious" accel="2.6" decel="4.5" sigma="0.5" color="red"/>
+    <vehicle id="malicious_0" type="malicious" route="route_malicious" depart="1">
+        <param key="ssi_credentials" value="false"/>
+    </vehicle>
+    <vehicle id="malicious_1" type="malicious" route="route_malicious" depart="15"/>
+    <vehicle id="malicious_2" type="malicious" route="route_malicious" depart="30"/>
+    <vehicle id="malicious_3" type="malicious" route="route_malicious" depart="45"/>
+</routes>
